@@ -47,8 +47,6 @@ public class Downloader {
         this.pathTo = pathTo;
 
         readLinks(pathSource);
-        for(String s : urls)
-            System.out.println(s);
     }
 
     private void readLinks(String s) {
@@ -74,11 +72,10 @@ public class Downloader {
                 @Override
                 public void run() {
                     String fileName = addFileName(url);
-                    try {
-                        URL web = new URL(url);
-                        ReadableByteChannel rbc = Channels.newChannel(web.openStream());
-                        File fileTo = new File(pathTo + "\\" + fileName);
-                        FileOutputStream fos = new FileOutputStream(String.valueOf(fileTo));
+                    File fileTo = new File(pathTo + "\\" + fileName);
+                    try (ReadableByteChannel rbc = Channels.newChannel(new URL(url).openStream());
+                            FileOutputStream fos = new FileOutputStream(String.valueOf(fileTo)))
+                    {
                         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
                     }catch (IOException e)
                     {
